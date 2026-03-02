@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nouvelle Évaluation DSI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(to bottom right, #0f4c81, #1abc9c);
+      color: white;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      color: black;
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    button {
+      background: #0f4c81;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 10px;
+      width: 100%;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Nouvelle Évaluation DSI</h2>
+
+<div class="card">
+  <h3>Identification Patient</h3>
+  <input type="text" id="nom" placeholder="Nom du patient">
+  <input type="number" id="age" placeholder="Âge">
+</div>
+
+<div class="card">
+  <h3>Besoin : Respirer</h3>
+  <select id="respirer">
+    <option value="Non">Non perturbé</option>
+    <option value="Oui">Perturbé</option>
+  </select>
+  <textarea id="respirer_note" placeholder="Observations"></textarea>
+</div>
+
+<button onclick="saveDSI()">Enregistrer</button>
+
+<script>
+function saveDSI(){
+  const patient = {
+    nom: document.getElementById("nom").value,
+    age: document.getElementById("age").value,
+    respirer: document.getElementById("respirer").value,
+    note: document.getElementById("respirer_note").value
+  };
+
+  let data = JSON.parse(localStorage.getItem("dsiData")) || [];
+  data.push(patient);
+  localStorage.setItem("dsiData", JSON.stringify(data));
+
+  alert("Évaluation enregistrée !");
+}
+</script>
+
+</body>
+</html>

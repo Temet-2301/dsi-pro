@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DSI Pro - Tableau de bord</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(to bottom right, #0f4c81, #1abc9c);
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      color: black;
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    button {
+      background: #0f4c81;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Bienvenue sur DSI Pro</h1>
+<p id="user"></p>
+
+<div class="card">
+  <h2>Menu</h2>
+  <button onclick="startDSI()">Nouvelle évaluation DSI</button>
+</div>
+
+<script>
+const user = localStorage.getItem("user");
+document.getElementById("user").innerText = "Infirmier : " + user;
+
+function startDSI() {
+  alert("Module DSI bientôt activé 🔥");
+}
+</script>
+
+</body>
+  </html>

@@ -1,65 +1,13 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DSI Pro - TEMET</title>
-  <link rel="manifest" href="manifest.json">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom right, #0f4c81, #1abc9c);
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      color: black;
-      border-radius: 15px;
-      padding: 20px;
-      margin-top: 20px;
-    }
-    button {
-      background: #0f4c81;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
-    input {
-      padding: 10px;
-      margin: 5px;
-      width: 80%;
-    }
-  </style>
-</head>
-<body>
-
-<h1>DSI Pro</h1>
-<p>Application infirmière - By TEMET</p>
-
-<div class="card">
-  <h2>Connexion</h2>
-  <input type="text" id="username" placeholder="Nom infirmier"><br>
-  <input type="password" id="password" placeholder="Mot de passe"><br>
-  <button onclick="login()">Se connecter</button>
-</div>
-
 <script>
-function login() {
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
+function seConnecter() {
+  const utilisateur = document.getElementById("utilisateur").value;
+  const passe = document.getElementById("motdepasse").value;
 
-  if(pass === "TEMET" && user !== ""){
-    localStorage.setItem("user", user);
+  if (passe === "TEMET" && utilisateur !== "") {
+    localStorage.setItem("utilisateur", utilisateur);
     window.location.href = "dashboard.html";
   } else {
     alert("Nom ou mot de passe incorrect");
   }
 }
 </script>
-
-</body>
-</html>

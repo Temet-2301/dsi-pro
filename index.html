@@ -1,3 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DSI Pro - Connexion</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: Arial; text-align:center; padding:30px;">
+
+<h1>DSI Pro</h1>
+<p>Application infirmière - Par TEMET</p>
+
+<input type="text" id="utilisateur" placeholder="Nom infirmier"><br><br>
+<input type="password" id="motdepasse" placeholder="Mot de passe"><br><br>
+
+<button onclick="seConnecter()">Se connecter</button>
+
 <script>
 function seConnecter() {
   const utilisateur = document.getElementById("utilisateur").value;
@@ -11,3 +27,6 @@ function seConnecter() {
   }
 }
 </script>
+
+</body>
+</html>

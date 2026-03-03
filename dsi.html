@@ -13,26 +13,29 @@
 
 <h3>Besoins fondamentaux (cocher si perturbé)</h3>
 
+<div>
 <label><input type="checkbox" value="Respirer"> Respirer</label><br>
 <label><input type="checkbox" value="Boire et manger"> Boire et manger</label><br>
 <label><input type="checkbox" value="Éliminer"> Éliminer</label><br>
 <label><input type="checkbox" value="Se mouvoir"> Se mouvoir</label><br>
 <label><input type="checkbox" value="Dormir"> Dormir</label><br>
 <label><input type="checkbox" value="Se vêtir"> Se vêtir</label><br>
-<label><input type="checkbox" value="Température"> Maintenir température</label><br>
+<label><input type="checkbox" value="Température"> Maintenir la température</label><br>
 <label><input type="checkbox" value="Hygiène"> Être propre</label><br>
-<label><input type="checkbox" value="Sécurité"> Éviter dangers</label><br>
+<label><input type="checkbox" value="Sécurité"> Éviter les dangers</label><br>
 <label><input type="checkbox" value="Communiquer"> Communiquer</label><br>
-<label><input type="checkbox" value="Croyances"> Croyances</label><br>
+<label><input type="checkbox" value="Croyances"> Croyances et valeurs</label><br>
 <label><input type="checkbox" value="Travailler"> Travailler</label><br>
 <label><input type="checkbox" value="Se divertir"> Se divertir</label><br>
-<label><input type="checkbox" value="Apprendre"> Apprendre</label><br><br>
+<label><input type="checkbox" value="Apprendre"> Apprendre</label><br>
+</div>
 
+<br>
 <button onclick="enregistrer()">Enregistrer</button>
 <button onclick="retour()">Retour</button>
 
 <h3>Résumé :</h3>
-<p id="resultat"></p>
+<pre id="resultat"></pre>
 
 <script>
 function enregistrer(){
@@ -40,12 +43,13 @@ function enregistrer(){
   const cases = document.querySelectorAll("input[type=checkbox]:checked");
 
   let liste = [];
-  cases.forEach(c => liste.push(c.value));
+  cases.forEach(function(c){
+    liste.push(c.value);
+  });
 
-  document.getElementById("resultat").innerText =
+  document.getElementById("resultat").textContent =
     "Patient : " + patient + 
     "\nBesoins perturbés : " + (liste.length ? liste.join(", ") : "Aucun");
-
 }
 
 function retour(){
@@ -55,4 +59,3 @@ function retour(){
 
 </body>
 </html>
-  

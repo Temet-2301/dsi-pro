@@ -1,75 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Nouvelle Évaluation DSI</title>
+  <title>DSI Pro - Nouvelle Évaluation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: Arial;
-      background: linear-gradient(to bottom right, #0f4c81, #1abc9c);
-      color: white;
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      color: black;
-      border-radius: 15px;
-      padding: 20px;
-      margin-top: 20px;
-    }
-    button {
-      background: #0f4c81;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 10px;
-      margin-top: 10px;
-      width: 100%;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-    }
-  </style>
 </head>
-<body>
+<body style="font-family: Arial; padding:20px;">
 
 <h2>Nouvelle Évaluation DSI</h2>
 
-<div class="card">
-  <h3>Identification Patient</h3>
-  <input type="text" id="nom" placeholder="Nom du patient">
-  <input type="number" id="age" placeholder="Âge">
-</div>
+<label>Nom du patient :</label><br>
+<input type="text" id="patient"><br><br>
 
-<div class="card">
-  <h3>Besoin : Respirer</h3>
-  <select id="respirer">
-    <option value="Non">Non perturbé</option>
-    <option value="Oui">Perturbé</option>
-  </select>
-  <textarea id="respirer_note" placeholder="Observations"></textarea>
-</div>
+<h3>Besoins fondamentaux (cocher si perturbé)</h3>
 
-<button onclick="saveDSI()">Enregistrer</button>
+<label><input type="checkbox" value="Respirer"> Respirer</label><br>
+<label><input type="checkbox" value="Boire et manger"> Boire et manger</label><br>
+<label><input type="checkbox" value="Éliminer"> Éliminer</label><br>
+<label><input type="checkbox" value="Se mouvoir"> Se mouvoir</label><br>
+<label><input type="checkbox" value="Dormir"> Dormir</label><br>
+<label><input type="checkbox" value="Se vêtir"> Se vêtir</label><br>
+<label><input type="checkbox" value="Température"> Maintenir température</label><br>
+<label><input type="checkbox" value="Hygiène"> Être propre</label><br>
+<label><input type="checkbox" value="Sécurité"> Éviter dangers</label><br>
+<label><input type="checkbox" value="Communiquer"> Communiquer</label><br>
+<label><input type="checkbox" value="Croyances"> Croyances</label><br>
+<label><input type="checkbox" value="Travailler"> Travailler</label><br>
+<label><input type="checkbox" value="Se divertir"> Se divertir</label><br>
+<label><input type="checkbox" value="Apprendre"> Apprendre</label><br><br>
+
+<button onclick="enregistrer()">Enregistrer</button>
+<button onclick="retour()">Retour</button>
+
+<h3>Résumé :</h3>
+<p id="resultat"></p>
 
 <script>
-function saveDSI(){
-  const patient = {
-    nom: document.getElementById("nom").value,
-    age: document.getElementById("age").value,
-    respirer: document.getElementById("respirer").value,
-    note: document.getElementById("respirer_note").value
-  };
+function enregistrer(){
+  const patient = document.getElementById("patient").value;
+  const cases = document.querySelectorAll("input[type=checkbox]:checked");
 
-  let data = JSON.parse(localStorage.getItem("dsiData")) || [];
-  data.push(patient);
-  localStorage.setItem("dsiData", JSON.stringify(data));
+  let liste = [];
+  cases.forEach(c => liste.push(c.value));
 
-  alert("Évaluation enregistrée !");
+  document.getElementById("resultat").innerText =
+    "Patient : " + patient + 
+    "\nBesoins perturbés : " + (liste.length ? liste.join(", ") : "Aucun");
+
+}
+
+function retour(){
+  window.location.href = "dashboard.html";
 }
 </script>
 
 </body>
 </html>
+  

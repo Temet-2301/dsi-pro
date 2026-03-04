@@ -69,9 +69,26 @@ function continuer(){
     infirmier: infirmier
   };
 
-  localStorage.setItem("patientData", JSON.stringify(patientData));
-  window.location.href = "besoins.html";
-}
+  let patients = JSON.parse(localStorage.getItem("patients")) || [];
+
+let nouveauPatient = {
+id: "PAT-"+Date.now(),
+identite: {
+nom: document.getElementById("nom").value,
+age: document.getElementById("age").value,
+sexe: document.getElementById("sexe").value,
+service: document.getElementById("service").value,
+dateAdmission: document.getElementById("dateAdmission").value
+},
+evaluations: [],
+dateCreation: new Date().toLocaleString(),
+infirmier: localStorage.getItem("infirmierConnecte")
+};
+
+patients.push(nouveauPatient);
+localStorage.setItem("patients",JSON.stringify(patients));
+
+localStorage.setItem("patientActif",nouveauPatient.id);
 
 </script>
 

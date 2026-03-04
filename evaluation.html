@@ -1,142 +1,197 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>DSI Pro - Évaluation</title>
+  <title>DSI Pro - Évaluation Complète</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-<body style="font-family: Arial; padding:20px;">
+<body style="font-family:Arial;padding:20px;max-width:900px;margin:auto;">
 
 <h2 id="titreBesoin"></h2>
-
-<div id="contenu"></div>
+<div id="formulaire"></div>
 
 <br>
+<button onclick="genererDiagnostic()">Générer Diagnostic</button>
 <button onclick="suivant()">Suivant</button>
+
+<hr>
+<h3>Diagnostic infirmier (Approche PES)</h3>
+<p><strong>Problème :</strong> <span id="probleme"></span></p>
+<p><strong>Étiologies :</strong> <span id="etiologie"></span></p>
+<p><strong>Symptômes :</strong> <span id="symptomes"></span></p>
+<p><strong>Dépendance :</strong> <span id="dependance"></span></p>
+
+<h3>Plan de soins (Rôle propre)</h3>
+<ul id="planSoins"></ul>
 
 <script>
 
-const langue = localStorage.getItem("langue") || "fr";
-const besoinsFR = [
-  "Respirer",
-  "Boire et manger",
-  "Éliminer",
-  "Se mouvoir",
-  "Dormir et se reposer",
-  "Se vêtir et se dévêtir",
-  "Maintenir la température",
-  "Être propre et protéger ses téguments",
-  "Éviter les dangers",
-  "Communiquer",
-  "Agir selon ses croyances",
-  "S’occuper en vue de se réaliser",
-  "Se divertir",
-  "Apprendre"
+const besoins = [
+"Respirer",
+"Boire et manger",
+"Éliminer",
+"Se mouvoir",
+"Dormir et se reposer",
+"Se vêtir",
+"Maintenir la température",
+"Être propre et protéger ses téguments",
+"Éviter les dangers",
+"Communiquer",
+"Agir selon ses croyances",
+"S’occuper en vue de se réaliser",
+"Se divertir",
+"Apprendre"
 ];
 
 const selection = JSON.parse(localStorage.getItem("besoinsSelectionnes")) || [];
 let index = parseInt(localStorage.getItem("indexBesoin")) || 0;
 
 if(index >= selection.length){
-  alert("Évaluation terminée");
+  document.body.innerHTML += "<h2>Évaluation terminée</h2>";
 }
 
 const besoinActuel = selection[index];
-document.getElementById("titreBesoin").innerText = besoinsFR[besoinActuel];
+document.getElementById("titreBesoin").innerText = besoins[besoinActuel];
 
-const contenu = document.getElementById("contenu");
+const form = document.getElementById("formulaire");
 
-if(besoinActuel === 0){
+/* ===== FORMULAIRES SPÉCIFIQUES ===== */
 
-contenu.innerHTML = `
-<h3>Données subjectives</h3>
+const formulaires = {
+
+0: `
 <label><input type="checkbox" id="dyspnee"> Dyspnée</label><br>
 <label><input type="checkbox" id="toux"> Toux</label><br>
-<label><input type="checkbox" id="expecto"> Expectoration</label><br>
-<label>Douleur thoracique (0-10) :</label>
-<input type="number" id="douleur" min="0" max="10"><br><br>
-
-<label>Tabagisme :</label>
-<select id="tabac">
-  <option value="">--Choisir--</option>
-  <option>Actif</option>
-  <option>Ancien</option>
-  <option>Non-fumeur</option>
-</select><br><br>
-
-<h3>Données objectives</h3>
-<label>Fréquence respiratoire :</label>
-<input type="number" id="fr"><br><br>
-
-<label><input type="checkbox" id="spo2"> SpO₂ < 95%</label><br>
-<label><input type="checkbox" id="cyanose"> Cyanose</label><br>
 <label><input type="checkbox" id="tirage"> Tirage</label><br>
+<label><input type="checkbox" id="spo2"> SpO₂ < 95%</label><br>
+<label>FR :</label><input type="number" id="fr"><br>
+`,
 
-<label>Type respiration :</label>
-<select id="typeResp">
-  <option>Normale</option>
-  <option>Superficielle</option>
-  <option>Laborieuse</option>
-  <option>Irrégulière</option>
-</select><br><br>
+1: `
+<label><input type="checkbox" id="anorexie"> Anorexie</label><br>
+<label><input type="checkbox" id="vomissements"> Vomissements</label><br>
+<label><input type="checkbox" id="dysphagie"> Dysphagie</label><br>
+<label>IMC :</label><input type="number" id="imc"><br>
+`,
 
-<label><input type="checkbox" id="oxygene"> Oxygène en cours</label><br>
-<label>Débit (L/min) :</label>
-<input type="number" id="debit"><br><br>
+2: `
+<label><input type="checkbox" id="constipation"> Constipation</label><br>
+<label><input type="checkbox" id="diarrhee"> Diarrhée</label><br>
+<label><input type="checkbox" id="dysurie"> Dysurie</label><br>
+`,
 
-<h3>Antécédents respiratoires</h3>
-<textarea id="atcdResp"></textarea><br><br>
+3: `
+<label><input type="checkbox" id="alite"> Alité</label><br>
+<label><input type="checkbox" id="faiblesse"> Faiblesse musculaire</label><br>
+<label><input type="checkbox" id="escarre"> Escarre</label><br>
+`,
 
-<h3>Niveau autonomie</h3>
-<select id="autonomie">
-  <option>Autonome</option>
-  <option>Partiellement dépendant</option>
-  <option>Dépendant</option>
-</select><br><br>
+4: `<label><input type="checkbox" id="insomnie"> Insomnie</label><br>`,
 
-<h3>Diagnostic suggéré :</h3>
-<p id="diagnostic"></p>
+5: `<label><input type="checkbox" id="dependHabillage"> Difficulté habillage</label><br>`,
 
-<button onclick="genererDiagnostic()">Générer diagnostic</button>
-`;
-}
+6: `<label><input type="checkbox" id="hyperthermie"> Hyperthermie</label><br>`,
+
+7: `<label><input type="checkbox" id="lesionPeau"> Lésion cutanée</label><br>`,
+
+8: `<label><input type="checkbox" id="risqueChute"> Risque de chute</label><br>`,
+
+9: `<label><input type="checkbox" id="troubleCommunication"> Trouble communication</label><br>`,
+
+10:`<label><input type="checkbox" id="detresseSpirituelle"> Détresse spirituelle</label><br>`,
+
+11:`<label><input type="checkbox" id="inactivite"> Inactivité</label><br>`,
+
+12:`<label><input type="checkbox" id="isolement"> Isolement social</label><br>`,
+
+13:`<label><input type="checkbox" id="deficitConnaissance"> Déficit de connaissance</label><br>`
+};
+
+form.innerHTML = formulaires[besoinActuel];
+
+/* ===== GÉNÉRATION DIAGNOSTIC ===== */
 
 function genererDiagnostic(){
-  let diag = "";
 
-  const fr = document.getElementById("fr").value;
-  const spo2 = document.getElementById("spo2").checked;
-  const tirage = document.getElementById("tirage").checked;
-  const toux = document.getElementById("toux").checked;
-  const expecto = document.getElementById("expecto").checked;
-  const dyspnee = document.getElementById("dyspnee").checked;
+let probleme="", etiologie="", symptomes="", dependance="Autonome";
+let plan=[];
 
-  if(fr > 20 && tirage){
-    diag = "Détresse respiratoire";
-  }
-  else if(spo2){
-    diag = "Altération des échanges gazeux";
-  }
-  else if(toux && expecto){
-    diag = "Encombrement bronchique";
-  }
-  else if(dyspnee){
-    diag = "Intolérance à l’effort";
-  }
-  else{
-    diag = "Aucun diagnostic prioritaire détecté";
-  }
-
-  document.getElementById("diagnostic").innerText = diag;
+/* RESPIRER */
+if(besoinActuel===0){
+if(document.getElementById("spo2").checked || document.getElementById("tirage").checked){
+probleme="Altération des échanges gazeux";
+etiologie="Encombrement bronchique / détresse respiratoire";
+symptomes="SpO₂ basse ou tirage";
+dependance="Dépendant";
+plan=["Surveillance FR et SpO₂","Position demi-assise","Oxygénothérapie selon prescription"];
+}
 }
 
+/* BOIRE ET MANGER */
+if(besoinActuel===1){
+let imc=document.getElementById("imc").value;
+if(imc<18.5){
+probleme="Déséquilibre nutritionnel inférieur";
+etiologie="Apports insuffisants";
+symptomes="IMC bas";
+dependance="Partiellement dépendant";
+plan=["Surveillance poids","Fractionner repas","Hydratation adaptée"];
+}
+}
+
+/* ELIMINER */
+if(besoinActuel===2){
+if(document.getElementById("constipation").checked){
+probleme="Constipation";
+etiologie="Immobilité / alimentation pauvre en fibres";
+symptomes="Selles rares";
+dependance="Partiellement dépendant";
+plan=["Hydratation","Mobilisation","Surveillance transit"];
+}
+}
+
+/* SE MOUVOIR */
+if(besoinActuel===3){
+if(document.getElementById("alite").checked){
+probleme="Mobilité physique altérée";
+etiologie="Faiblesse musculaire";
+symptomes="Alitement";
+dependance="Dépendant";
+plan=["Mobilisation progressive","Prévention escarre","Changement position 2h"];
+}
+}
+
+/* AUTRES BESOINS SIMPLIFIÉS */
+if(besoinActuel>3){
+probleme="Besoin perturbé : "+besoins[besoinActuel];
+etiologie="Facteurs liés à l’état clinique";
+symptomes="Selon évaluation";
+dependance="À déterminer";
+plan=["Surveillance adaptée","Accompagnement","Éducation du patient"];
+}
+
+document.getElementById("probleme").innerText=probleme;
+document.getElementById("etiologie").innerText=etiologie;
+document.getElementById("symptomes").innerText=symptomes;
+document.getElementById("dependance").innerText=dependance;
+
+let ul=document.getElementById("planSoins");
+ul.innerHTML="";
+plan.forEach(p=>{
+let li=document.createElement("li");
+li.innerText=p;
+ul.appendChild(li);
+});
+}
+
+/* ===== NAVIGATION ===== */
+
 function suivant(){
-  index++;
-  localStorage.setItem("indexBesoin", index);
-  window.location.reload();
+index++;
+localStorage.setItem("indexBesoin",index);
+location.reload();
 }
 
 </script>
-
 </body>
-  </html>
+</html>

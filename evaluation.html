@@ -6,9 +6,8 @@
 <style>
 body{font-family:Arial;max-width:1000px;margin:auto;padding:20px}
 h2{color:#0a3d62}
-.section{margin-bottom:15px}
-button{padding:10px 15px;margin:5px}
-textarea{width:100%;height:80px}
+.section{margin-bottom:10px}
+button{padding:10px;margin:5px}
 </style>
 </head>
 
@@ -19,6 +18,7 @@ textarea{width:100%;height:80px}
 
 <button onclick="generer()">Générer Diagnostic</button>
 <button onclick="suivant()">Suivant</button>
+<button onclick="resumeFinal()">Voir Résumé Final</button>
 
 <hr>
 
@@ -31,172 +31,43 @@ textarea{width:100%;height:80px}
 <h3>Plan de soins</h3>
 <ul id="plan"></ul>
 
+<div id="resumeZone"></div>
+
 <script>
 
 const besoins = [
-"Respirer",
-"Boire et manger",
-"Éliminer",
-"Se mouvoir",
-"Dormir et se reposer",
-"Se vêtir",
-"Maintenir température",
-"Hygiène et téguments",
-"Éviter dangers",
-"Communiquer",
-"Croyances et valeurs",
-"Se réaliser",
-"Se divertir",
-"Apprendre"
+"Respirer","Boire et manger","Éliminer","Se mouvoir",
+"Dormir et se reposer","Se vêtir","Maintenir température",
+"Hygiène et téguments","Éviter dangers","Communiquer",
+"Croyances et valeurs","Se réaliser","Se divertir","Apprendre"
 ];
 
 const selection = JSON.parse(localStorage.getItem("besoinsSelectionnes")) || [];
 let index = parseInt(localStorage.getItem("indexBesoin")) || 0;
+let evaluations = JSON.parse(localStorage.getItem("evaluations")) || [];
 
 if(index >= selection.length){
-document.body.innerHTML="<h2>Évaluation terminée</h2>";
+document.body.innerHTML="<h2>Évaluation terminée</h2><button onclick='resumeFinal()'>Voir Résumé Final</button>";
 }
 
 let besoin = selection[index];
 document.getElementById("titre").innerText = besoins[besoin];
 
 const banqueQuestions = {
-
-0:[
-"Dyspnée","Toux","Expectorations",
-"SpO2 <95%","FR anormale",
-"Tirage","Cyanose",
-"Douleur thoracique",
-"Utilise O2","Tabagisme"
-],
-
-1:[
-"Anorexie","Nausées",
-"Vomissements","Dysphagie",
-"IMC <18.5","IMC >30",
-"Déshydratation","Prothèse dentaire",
-"Régime spécial","Dépend pour manger"
-],
-
-2:[
-"Constipation","Diarrhée",
-"Incontinence urinaire","Rétention",
-"Brûlure mictionnelle","Ballonnement",
-"Sonde urinaire","Stomie",
-"Selles rares","Dépend élimination"
-],
-
-3:[
-"Alité","Faiblesse musculaire",
-"Escarre","Risque chute",
-"Vertiges","Fracture récente",
-"Marche assistée","Douleur mobilisation",
-"Spasticité","Dépend mobilisation"
-],
-
-4:[
-"Insomnie","Réveils nocturnes",
-"Somnolence","Apnée suspectée",
-"Cauchemars","Fatigue",
-"Médicaments sommeil",
-"Douleur nocturne","Stress",
-"Dépend pour repos"
-],
-
-5:[
-"Difficulté habillage","Hémiplégie",
-"Arthrose mains","Tremblements",
-"Dépend habillage","Amputation",
-"Confusion","Fatigue",
-"Refus aide","Risque chute"
-],
-
-6:[
-"Hyperthermie","Hypothermie",
-"Transpiration excessive",
-"Frissons","Infection suspectée",
-"Température instable",
-"Se couvre excessivement",
-"Déshydratation","Fièvre persistante",
-"Dépend régulation"
-],
-
-7:[
-"Plaie","Escarre",
-"Rougeur cutanée","Mycose",
-"Prurit","Peau sèche",
-"Hématome","Brûlure",
-"Mauvaise hygiène","Dépend toilette"
-],
-
-8:[
-"Risque chute","Confusion",
-"Agressivité","Tentative fugue",
-"Automutilation","Risque suicide",
-"Non observance traitement",
-"Trouble vigilance",
-"Environnement dangereux",
-"Dépend surveillance"
-],
-
-9:[
-"Aphasie","Surdité",
-"Mutisme","Confusion",
-"Barrière langue",
-"Trouble cognition",
-"Refus communication",
-"Anxiété","Isolement",
-"Dépend communication"
-],
-
-10:[
-"Détresse spirituelle",
-"Refus soins croyances",
-"Culpabilité","Angoisse",
-"Besoin soutien religieux",
-"Perte sens","Isolement spirituel",
-"Conflit valeurs",
-"Recherche prière",
-"Dépend accompagnement"
-],
-
-11:[
-"Inactivité","Perte emploi",
-"Dévalorisation",
-"Dépend activité",
-"Retrait social",
-"Manque motivation",
-"Fatigue chronique",
-"Dépression suspectée",
-"Refus activité",
-"Besoin accompagnement"
-],
-
-12:[
-"Isolement social",
-"Refus loisirs",
-"Tristesse","Retrait",
-"Dépend stimulation",
-"Peu de visites",
-"Anxiété sociale",
-"Manque intérêt",
-"Passivité",
-"Besoin encadrement"
-],
-
-13:[
-"Déficit connaissance",
-"Mauvaise observance",
-"Refus éducation",
-"Barrière langue",
-"Anxiété apprentissage",
-"Dépend explications",
-"Faible compréhension",
-"Risque erreur traitement",
-"Manque motivation",
-"Besoin renforcement"
-]
-
+0:["Dyspnée","Toux","Expectorations","SpO2 <95%","FR anormale","Tirage","Cyanose","Douleur thoracique","Utilise O2","Tabagisme"],
+1:["Anorexie","Nausées","Vomissements","Dysphagie","IMC <18.5","IMC >30","Déshydratation","Prothèse dentaire","Régime spécial","Dépend pour manger"],
+2:["Constipation","Diarrhée","Incontinence","Rétention","Brûlure mictionnelle","Ballonnement","Sonde","Stomie","Selles rares","Dépend élimination"],
+3:["Alité","Faiblesse","Escarre","Risque chute","Vertiges","Fracture","Marche assistée","Douleur mobilisation","Spasticité","Dépend mobilité"],
+4:["Insomnie","Réveils nocturnes","Somnolence","Apnée suspectée","Cauchemars","Fatigue","Médicaments","Douleur nocturne","Stress","Dépend repos"],
+5:["Difficulté habillage","Hémiplégie","Arthrose","Tremblements","Dépend habillage","Amputation","Confusion","Fatigue","Refus aide","Risque chute"],
+6:["Hyperthermie","Hypothermie","Transpiration","Frissons","Infection","Température instable","Se couvre excessivement","Déshydratation","Fièvre persistante","Dépend régulation"],
+7:["Plaie","Escarre","Rougeur","Mycose","Prurit","Peau sèche","Hématome","Brûlure","Mauvaise hygiène","Dépend toilette"],
+8:["Risque chute","Confusion","Agressivité","Tentative fugue","Automutilation","Risque suicide","Non observance","Trouble vigilance","Environnement dangereux","Dépend surveillance"],
+9:["Aphasie","Surdité","Mutisme","Confusion","Barrière langue","Trouble cognition","Refus communication","Anxiété","Isolement","Dépend communication"],
+10:["Détresse spirituelle","Refus soins croyances","Culpabilité","Angoisse","Besoin soutien religieux","Perte sens","Isolement spirituel","Conflit valeurs","Recherche prière","Dépend accompagnement"],
+11:["Inactivité","Perte emploi","Dévalorisation","Dépend activité","Retrait social","Manque motivation","Fatigue chronique","Dépression suspectée","Refus activité","Besoin accompagnement"],
+12:["Isolement social","Refus loisirs","Tristesse","Retrait","Dépend stimulation","Peu de visites","Anxiété sociale","Manque intérêt","Passivité","Besoin encadrement"],
+13:["Déficit connaissance","Mauvaise observance","Refus éducation","Barrière langue","Anxiété apprentissage","Dépend explications","Faible compréhension","Risque erreur traitement","Manque motivation","Besoin renforcement"]
 };
 
 let zone = document.getElementById("questions");
@@ -221,20 +92,25 @@ let dependance="Autonome";
 if(cochés>=3 && cochés<=5) dependance="Partiellement dépendant";
 if(cochés>5) dependance="Dépendant";
 
-document.getElementById("p").innerText="Altération du besoin : "+besoins[besoin];
-document.getElementById("e").innerText="Facteurs liés à l'état pathologique ou situation clinique";
-document.getElementById("s").innerText=symptomes.join(", ");
-document.getElementById("d").innerText=dependance;
+let diagnostic={
+besoin:besoins[besoin],
+probleme:"Altération du besoin",
+etiologie:"Lié à l’état clinique",
+symptomes:symptomes.join(", "),
+dependance:dependance
+};
+
+evaluations.push(diagnostic);
+localStorage.setItem("evaluations",JSON.stringify(evaluations));
+
+document.getElementById("p").innerText=diagnostic.probleme+" : "+diagnostic.besoin;
+document.getElementById("e").innerText=diagnostic.etiologie;
+document.getElementById("s").innerText=diagnostic.symptomes;
+document.getElementById("d").innerText=diagnostic.dependance;
 
 let plan=document.getElementById("plan");
 plan.innerHTML="";
-[
-"Surveillance ciblée",
-"Accompagnement personnalisé",
-"Éducation thérapeutique",
-"Prévention complications",
-"Réévaluation quotidienne"
-].forEach(p=>{
+["Surveillance","Prévention","Accompagnement","Éducation","Réévaluation"].forEach(p=>{
 let li=document.createElement("li");
 li.innerText=p;
 plan.appendChild(li);
@@ -245,6 +121,24 @@ function suivant(){
 index++;
 localStorage.setItem("indexBesoin",index);
 location.reload();
+}
+
+function resumeFinal(){
+
+let zone=document.getElementById("resumeZone");
+zone.innerHTML="<h2>Résumé Global du Patient</h2>";
+
+evaluations.forEach(e=>{
+zone.innerHTML+=`
+<hr>
+<h3>${e.besoin}</h3>
+<p><strong>Problème :</strong> ${e.probleme}</p>
+<p><strong>Symptômes :</strong> ${e.symptomes}</p>
+<p><strong>Dépendance :</strong> ${e.dependance}</p>
+`;
+});
+
+zone.innerHTML+=`<button onclick="window.print()">Exporter en PDF</button>`;
 }
 
 </script>

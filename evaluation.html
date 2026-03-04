@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DSI Pro - Évaluation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="font-family: Arial; padding:20px;">
+
+<h2 id="titreBesoin"></h2>
+
+<div id="contenu"></div>
+
+<br>
+<button onclick="suivant()">Suivant</button>
+
+<script>
+
+const langue = localStorage.getItem("langue") || "fr";
+const besoinsFR = [
+  "Respirer",
+  "Boire et manger",
+  "Éliminer",
+  "Se mouvoir",
+  "Dormir et se reposer",
+  "Se vêtir et se dévêtir",
+  "Maintenir la température",
+  "Être propre et protéger ses téguments",
+  "Éviter les dangers",
+  "Communiquer",
+  "Agir selon ses croyances",
+  "S’occuper en vue de se réaliser",
+  "Se divertir",
+  "Apprendre"
+];
+
+const selection = JSON.parse(localStorage.getItem("besoinsSelectionnes")) || [];
+let index = parseInt(localStorage.getItem("indexBesoin")) || 0;
+
+if(index >= selection.length){
+  alert("Évaluation terminée");
+}
+
+const besoinActuel = selection[index];
+document.getElementById("titreBesoin").innerText = besoinsFR[besoinActuel];
+
+const contenu = document.getElementById("contenu");
+
+if(besoinActuel === 0){
+
+contenu.innerHTML = `
+<h3>Données subjectives</h3>
+<label><input type="checkbox" id="dyspnee"> Dyspnée</label><br>
+<label><input type="checkbox" id="toux"> Toux</label><br>
+<label><input type="checkbox" id="expecto"> Expectoration</label><br>
+<label>Douleur thoracique (0-10) :</label>
+<input type="number" id="douleur" min="0" max="10"><br><br>
+
+<label>Tabagisme :</label>
+<select id="tabac">
+  <option value="">--Choisir--</option>
+  <option>Actif</option>
+  <option>Ancien</option>
+  <option>Non-fumeur</option>
+</select><br><br>
+
+<h3>Données objectives</h3>
+<label>Fréquence respiratoire :</label>
+<input type="number" id="fr"><br><br>
+
+<label><input type="checkbox" id="spo2"> SpO₂ < 95%</label><br>
+<label><input type="checkbox" id="cyanose"> Cyanose</label><br>
+<label><input type="checkbox" id="tirage"> Tirage</label><br>
+
+<label>Type respiration :</label>
+<select id="typeResp">
+  <option>Normale</option>
+  <option>Superficielle</option>
+  <option>Laborieuse</option>
+  <option>Irrégulière</option>
+</select><br><br>
+
+<label><input type="checkbox" id="oxygene"> Oxygène en cours</label><br>
+<label>Débit (L/min) :</label>
+<input type="number" id="debit"><br><br>
+
+<h3>Antécédents respiratoires</h3>
+<textarea id="atcdResp"></textarea><br><br>
+
+<h3>Niveau autonomie</h3>
+<select id="autonomie">
+  <option>Autonome</option>
+  <option>Partiellement dépendant</option>
+  <option>Dépendant</option>
+</select><br><br>
+
+<h3>Diagnostic suggéré :</h3>
+<p id="diagnostic"></p>
+
+<button onclick="genererDiagnostic()">Générer diagnostic</button>
+`;
+}
+
+function genererDiagnostic(){
+  let diag = "";
+
+  const fr = document.getElementById("fr").value;
+  const spo2 = document.getElementById("spo2").checked;
+  const tirage = document.getElementById("tirage").checked;
+  const toux = document.getElementById("toux").checked;
+  const expecto = document.getElementById("expecto").checked;
+  const dyspnee = document.getElementById("dyspnee").checked;
+
+  if(fr > 20 && tirage){
+    diag = "Détresse respiratoire";
+  }
+  else if(spo2){
+    diag = "Altération des échanges gazeux";
+  }
+  else if(toux && expecto){
+    diag = "Encombrement bronchique";
+  }
+  else if(dyspnee){
+    diag = "Intolérance à l’effort";
+  }
+  else{
+    diag = "Aucun diagnostic prioritaire détecté";
+  }
+
+  document.getElementById("diagnostic").innerText = diag;
+}
+
+function suivant(){
+  index++;
+  localStorage.setItem("indexBesoin", index);
+  window.location.reload();
+}
+
+</script>
+
+</body>
+  </html>

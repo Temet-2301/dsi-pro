@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DSI Pro - Patient</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="font-family: Arial; text-align:center; padding:30px;">
+
+<h2 id="titre"></h2>
+
+<input type="text" id="nomPatient"><br><br>
+
+<button onclick="continuer()" id="btnContinuer"></button>
+
+<script>
+
+const textes = {
+  fr: {
+    titre: "Identification du patient",
+    nom: "Nom du patient",
+    bouton: "Continuer"
+  },
+  en: {
+    titre: "Patient Identification",
+    nom: "Patient name",
+    bouton: "Continue"
+  },
+  es: {
+    titre: "Identificación del paciente",
+    nom: "Nombre del paciente",
+    bouton: "Continuar"
+  }
+};
+
+const langue = localStorage.getItem("langue") || "fr";
+const t = textes[langue];
+
+document.getElementById("titre").innerText = t.titre;
+document.getElementById("nomPatient").placeholder = t.nom;
+document.getElementById("btnContinuer").innerText = t.bouton;
+
+function continuer(){
+  const nom = document.getElementById("nomPatient").value;
+  if(nom !== ""){
+    localStorage.setItem("patient", nom);
+    window.location.href = "besoins.html";
+  }
+}
+
+</script>
+
+</body>
+</html>

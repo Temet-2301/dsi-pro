@@ -1,31 +1,97 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>DSI Pro - Connexion</title>
+  <title>DSI Pro</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body style="font-family: Arial; text-align:center; padding:30px;">
 
-<h1>DSI Pro</h1>
-<p>Application infirmière - Par TEMET</p>
+<div id="languePage">
+  <h2>Choisir la langue / Choose language / Elegir idioma</h2>
+  <button onclick="choisirLangue('fr')">🇫🇷 Français</button><br><br>
+  <button onclick="choisirLangue('en')">🇬🇧 English</button><br><br>
+  <button onclick="choisirLangue('es')">🇪🇸 Español</button>
+</div>
 
-<input type="text" id="utilisateur" placeholder="Nom infirmier"><br><br>
-<input type="password" id="motdepasse" placeholder="Mot de passe"><br><br>
+<div id="loginPage" style="display:none;">
+  <h1 id="titreApp"></h1>
+  <p id="sousTitre"></p>
 
-<button onclick="seConnecter()">Se connecter</button>
+  <input type="text" id="utilisateur"><br><br>
+  <input type="password" id="motdepasse"><br><br>
+
+  <button onclick="seConnecter()" id="btnConnexion"></button>
+</div>
 
 <script>
-function seConnecter() {
+
+const textes = {
+  fr: {
+    titre: "DSI Pro",
+    sous: "Application infirmière - Par TEMET",
+    utilisateur: "Nom infirmier",
+    motdepasse: "Mot de passe",
+    bouton: "Se connecter",
+    erreur: "Nom ou mot de passe incorrect"
+  },
+  en: {
+    titre: "DSI Pro",
+    sous: "Nursing Application - By TEMET",
+    utilisateur: "Nurse name",
+    motdepasse: "Password",
+    bouton: "Login",
+    erreur: "Incorrect name or password"
+  },
+  es: {
+    titre: "DSI Pro",
+    sous: "Aplicación de Enfermería - Por TEMET",
+    utilisateur: "Nombre del enfermero",
+    motdepasse: "Contraseña",
+    bouton: "Conectar",
+    erreur: "Nombre o contraseña incorrectos"
+  }
+};
+
+function choisirLangue(lang){
+  localStorage.setItem("langue", lang);
+  document.getElementById("languePage").style.display = "none";
+  afficherConnexion();
+}
+
+function afficherConnexion(){
+  const langue = localStorage.getItem("langue");
+  const t = textes[langue];
+
+  document.getElementById("loginPage").style.display = "block";
+  document.getElementById("titreApp").innerText = t.titre;
+  document.getElementById("sousTitre").innerText = t.sous;
+  document.getElementById("utilisateur").placeholder = t.utilisateur;
+  document.getElementById("motdepasse").placeholder = t.motdepasse;
+  document.getElementById("btnConnexion").innerText = t.bouton;
+}
+
+function seConnecter(){
   const utilisateur = document.getElementById("utilisateur").value;
   const passe = document.getElementById("motdepasse").value;
+  const langue = localStorage.getItem("langue");
+  const t = textes[langue];
 
-  if (passe === "TEMET" && utilisateur !== "") {
+  if(passe === "TEMET" && utilisateur !== ""){
     localStorage.setItem("utilisateur", utilisateur);
     window.location.href = "dashboard.html";
   } else {
-    alert("Nom ou mot de passe incorrect");
+    alert(t.erreur);
   }
 }
+
+window.onload = function(){
+  if(localStorage.getItem("langue")){
+    document.getElementById("languePage").style.display = "none";
+    afficherConnexion();
+  }
+}
+
 </script>
 
 </body>

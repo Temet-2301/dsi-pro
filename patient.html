@@ -1,51 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>DSI Pro - Patient</title>
+  <title>DSI Pro - Identification Patient</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-<body style="font-family: Arial; text-align:center; padding:30px;">
+<body style="font-family: Arial; padding:20px;">
 
-<h2 id="titre"></h2>
+<h2>Identification du patient</h2>
 
-<input type="text" id="nomPatient"><br><br>
+<input type="text" id="nom" placeholder="Nom et prénom"><br><br>
 
-<button onclick="continuer()" id="btnContinuer"></button>
+<input type="number" id="age" placeholder="Âge"><br><br>
+
+<select id="sexe">
+  <option value="">Sexe</option>
+  <option value="Masculin">Masculin</option>
+  <option value="Féminin">Féminin</option>
+</select><br><br>
+
+<input type="text" id="service" placeholder="Service"><br><br>
+
+<label>Date d’admission :</label><br>
+<input type="date" id="admission"><br><br>
+
+<label>Date d’hospitalisation :</label><br>
+<input type="date" id="hospitalisation"><br><br>
+
+<textarea id="motif" placeholder="Motif d’hospitalisation"></textarea><br><br>
+
+<textarea id="anteMed" placeholder="Antécédents médicaux"></textarea><br><br>
+
+<textarea id="anteChir" placeholder="Antécédents chirurgicaux"></textarea><br><br>
+
+<textarea id="allergies" placeholder="Allergies"></textarea><br><br>
+
+<textarea id="traitement" placeholder="Traitement en cours"></textarea><br><br>
+
+<input type="text" id="reference" placeholder="Personne de référence"><br><br>
+
+<label>Date d’évaluation :</label><br>
+<input type="date" id="evaluation"><br><br>
+
+<p><strong>Infirmier évaluateur :</strong> <span id="infirmier"></span></p>
+
+<button onclick="continuer()">Continuer</button>
 
 <script>
 
-const textes = {
-  fr: {
-    titre: "Identification du patient",
-    nom: "Nom du patient",
-    bouton: "Continuer"
-  },
-  en: {
-    titre: "Patient Identification",
-    nom: "Patient name",
-    bouton: "Continue"
-  },
-  es: {
-    titre: "Identificación del paciente",
-    nom: "Nombre del paciente",
-    bouton: "Continuar"
-  }
-};
-
-const langue = localStorage.getItem("langue") || "fr";
-const t = textes[langue];
-
-document.getElementById("titre").innerText = t.titre;
-document.getElementById("nomPatient").placeholder = t.nom;
-document.getElementById("btnContinuer").innerText = t.bouton;
+const infirmier = localStorage.getItem("utilisateur");
+document.getElementById("infirmier").innerText = infirmier || "";
 
 function continuer(){
-  const nom = document.getElementById("nomPatient").value;
-  if(nom !== ""){
-    localStorage.setItem("patient", nom);
-    window.location.href = "besoins.html";
-  }
+  const patientData = {
+    nom: document.getElementById("nom").value,
+    age: document.getElementById("age").value,
+    sexe: document.getElementById("sexe").value,
+    service: document.getElementById("service").value,
+    admission: document.getElementById("admission").value,
+    hospitalisation: document.getElementById("hospitalisation").value,
+    motif: document.getElementById("motif").value,
+    anteMed: document.getElementById("anteMed").value,
+    anteChir: document.getElementById("anteChir").value,
+    allergies: document.getElementById("allergies").value,
+    traitement: document.getElementById("traitement").value,
+    reference: document.getElementById("reference").value,
+    evaluation: document.getElementById("evaluation").value,
+    infirmier: infirmier
+  };
+
+  localStorage.setItem("patientData", JSON.stringify(patientData));
+  window.location.href = "besoins.html";
 }
 
 </script>

@@ -1,28 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>DSI Pro - Évaluation Complète</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSI Pro - Évaluation Complète</title>
+<style>
+body{font-family:Arial;max-width:1000px;margin:auto;padding:20px}
+h2{color:#0a3d62}
+.section{margin-bottom:15px}
+button{padding:10px 15px;margin:5px}
+textarea{width:100%;height:80px}
+</style>
 </head>
 
-<body style="font-family:Arial;padding:20px;max-width:900px;margin:auto;">
+<body>
 
-<h2 id="titreBesoin"></h2>
-<div id="formulaire"></div>
+<h2 id="titre"></h2>
+<div id="questions"></div>
 
-<br>
-<button onclick="genererDiagnostic()">Générer Diagnostic</button>
+<button onclick="generer()">Générer Diagnostic</button>
 <button onclick="suivant()">Suivant</button>
 
 <hr>
-<h3>Diagnostic infirmier (Approche PES)</h3>
-<p><strong>Problème :</strong> <span id="probleme"></span></p>
-<p><strong>Étiologies :</strong> <span id="etiologie"></span></p>
-<p><strong>Symptômes :</strong> <span id="symptomes"></span></p>
-<p><strong>Dépendance :</strong> <span id="dependance"></span></p>
 
-<h3>Plan de soins (Rôle propre)</h3>
-<ul id="planSoins"></ul>
+<h3>Diagnostic Infirmier (PES)</h3>
+<p><strong>Problème :</strong> <span id="p"></span></p>
+<p><strong>Étiologie :</strong> <span id="e"></span></p>
+<p><strong>Signes/Symptômes :</strong> <span id="s"></span></p>
+<p><strong>Dépendance :</strong> <span id="d"></span></p>
+
+<h3>Plan de soins</h3>
+<ul id="plan"></ul>
 
 <script>
 
@@ -33,12 +40,12 @@ const besoins = [
 "Se mouvoir",
 "Dormir et se reposer",
 "Se vêtir",
-"Maintenir la température",
-"Être propre et protéger ses téguments",
-"Éviter les dangers",
+"Maintenir température",
+"Hygiène et téguments",
+"Éviter dangers",
 "Communiquer",
-"Agir selon ses croyances",
-"S’occuper en vue de se réaliser",
+"Croyances et valeurs",
+"Se réaliser",
 "Se divertir",
 "Apprendre"
 ];
@@ -47,144 +54,192 @@ const selection = JSON.parse(localStorage.getItem("besoinsSelectionnes")) || [];
 let index = parseInt(localStorage.getItem("indexBesoin")) || 0;
 
 if(index >= selection.length){
-  document.body.innerHTML += "<h2>Évaluation terminée</h2>";
+document.body.innerHTML="<h2>Évaluation terminée</h2>";
 }
 
-const besoinActuel = selection[index];
-document.getElementById("titreBesoin").innerText = besoins[besoinActuel];
+let besoin = selection[index];
+document.getElementById("titre").innerText = besoins[besoin];
 
-const form = document.getElementById("formulaire");
+const banqueQuestions = {
 
-/* ===== FORMULAIRES SPÉCIFIQUES ===== */
+0:[
+"Dyspnée","Toux","Expectorations",
+"SpO2 <95%","FR anormale",
+"Tirage","Cyanose",
+"Douleur thoracique",
+"Utilise O2","Tabagisme"
+],
 
-const formulaires = {
+1:[
+"Anorexie","Nausées",
+"Vomissements","Dysphagie",
+"IMC <18.5","IMC >30",
+"Déshydratation","Prothèse dentaire",
+"Régime spécial","Dépend pour manger"
+],
 
-0: `
-<label><input type="checkbox" id="dyspnee"> Dyspnée</label><br>
-<label><input type="checkbox" id="toux"> Toux</label><br>
-<label><input type="checkbox" id="tirage"> Tirage</label><br>
-<label><input type="checkbox" id="spo2"> SpO₂ < 95%</label><br>
-<label>FR :</label><input type="number" id="fr"><br>
-`,
+2:[
+"Constipation","Diarrhée",
+"Incontinence urinaire","Rétention",
+"Brûlure mictionnelle","Ballonnement",
+"Sonde urinaire","Stomie",
+"Selles rares","Dépend élimination"
+],
 
-1: `
-<label><input type="checkbox" id="anorexie"> Anorexie</label><br>
-<label><input type="checkbox" id="vomissements"> Vomissements</label><br>
-<label><input type="checkbox" id="dysphagie"> Dysphagie</label><br>
-<label>IMC :</label><input type="number" id="imc"><br>
-`,
+3:[
+"Alité","Faiblesse musculaire",
+"Escarre","Risque chute",
+"Vertiges","Fracture récente",
+"Marche assistée","Douleur mobilisation",
+"Spasticité","Dépend mobilisation"
+],
 
-2: `
-<label><input type="checkbox" id="constipation"> Constipation</label><br>
-<label><input type="checkbox" id="diarrhee"> Diarrhée</label><br>
-<label><input type="checkbox" id="dysurie"> Dysurie</label><br>
-`,
+4:[
+"Insomnie","Réveils nocturnes",
+"Somnolence","Apnée suspectée",
+"Cauchemars","Fatigue",
+"Médicaments sommeil",
+"Douleur nocturne","Stress",
+"Dépend pour repos"
+],
 
-3: `
-<label><input type="checkbox" id="alite"> Alité</label><br>
-<label><input type="checkbox" id="faiblesse"> Faiblesse musculaire</label><br>
-<label><input type="checkbox" id="escarre"> Escarre</label><br>
-`,
+5:[
+"Difficulté habillage","Hémiplégie",
+"Arthrose mains","Tremblements",
+"Dépend habillage","Amputation",
+"Confusion","Fatigue",
+"Refus aide","Risque chute"
+],
 
-4: `<label><input type="checkbox" id="insomnie"> Insomnie</label><br>`,
+6:[
+"Hyperthermie","Hypothermie",
+"Transpiration excessive",
+"Frissons","Infection suspectée",
+"Température instable",
+"Se couvre excessivement",
+"Déshydratation","Fièvre persistante",
+"Dépend régulation"
+],
 
-5: `<label><input type="checkbox" id="dependHabillage"> Difficulté habillage</label><br>`,
+7:[
+"Plaie","Escarre",
+"Rougeur cutanée","Mycose",
+"Prurit","Peau sèche",
+"Hématome","Brûlure",
+"Mauvaise hygiène","Dépend toilette"
+],
 
-6: `<label><input type="checkbox" id="hyperthermie"> Hyperthermie</label><br>`,
+8:[
+"Risque chute","Confusion",
+"Agressivité","Tentative fugue",
+"Automutilation","Risque suicide",
+"Non observance traitement",
+"Trouble vigilance",
+"Environnement dangereux",
+"Dépend surveillance"
+],
 
-7: `<label><input type="checkbox" id="lesionPeau"> Lésion cutanée</label><br>`,
+9:[
+"Aphasie","Surdité",
+"Mutisme","Confusion",
+"Barrière langue",
+"Trouble cognition",
+"Refus communication",
+"Anxiété","Isolement",
+"Dépend communication"
+],
 
-8: `<label><input type="checkbox" id="risqueChute"> Risque de chute</label><br>`,
+10:[
+"Détresse spirituelle",
+"Refus soins croyances",
+"Culpabilité","Angoisse",
+"Besoin soutien religieux",
+"Perte sens","Isolement spirituel",
+"Conflit valeurs",
+"Recherche prière",
+"Dépend accompagnement"
+],
 
-9: `<label><input type="checkbox" id="troubleCommunication"> Trouble communication</label><br>`,
+11:[
+"Inactivité","Perte emploi",
+"Dévalorisation",
+"Dépend activité",
+"Retrait social",
+"Manque motivation",
+"Fatigue chronique",
+"Dépression suspectée",
+"Refus activité",
+"Besoin accompagnement"
+],
 
-10:`<label><input type="checkbox" id="detresseSpirituelle"> Détresse spirituelle</label><br>`,
+12:[
+"Isolement social",
+"Refus loisirs",
+"Tristesse","Retrait",
+"Dépend stimulation",
+"Peu de visites",
+"Anxiété sociale",
+"Manque intérêt",
+"Passivité",
+"Besoin encadrement"
+],
 
-11:`<label><input type="checkbox" id="inactivite"> Inactivité</label><br>`,
+13:[
+"Déficit connaissance",
+"Mauvaise observance",
+"Refus éducation",
+"Barrière langue",
+"Anxiété apprentissage",
+"Dépend explications",
+"Faible compréhension",
+"Risque erreur traitement",
+"Manque motivation",
+"Besoin renforcement"
+]
 
-12:`<label><input type="checkbox" id="isolement"> Isolement social</label><br>`,
-
-13:`<label><input type="checkbox" id="deficitConnaissance"> Déficit de connaissance</label><br>`
 };
 
-form.innerHTML = formulaires[besoinActuel];
+let zone = document.getElementById("questions");
+banqueQuestions[besoin].forEach((q,i)=>{
+zone.innerHTML+=`<div class="section">
+<label><input type="checkbox" id="q${i}"> ${q}</label>
+</div>`;
+});
 
-/* ===== GÉNÉRATION DIAGNOSTIC ===== */
+function generer(){
 
-function genererDiagnostic(){
-
-let probleme="", etiologie="", symptomes="", dependance="Autonome";
-let plan=[];
-
-/* RESPIRER */
-if(besoinActuel===0){
-if(document.getElementById("spo2").checked || document.getElementById("tirage").checked){
-probleme="Altération des échanges gazeux";
-etiologie="Encombrement bronchique / détresse respiratoire";
-symptomes="SpO₂ basse ou tirage";
-dependance="Dépendant";
-plan=["Surveillance FR et SpO₂","Position demi-assise","Oxygénothérapie selon prescription"];
+let cochés=0;
+let symptomes=[];
+banqueQuestions[besoin].forEach((q,i)=>{
+if(document.getElementById("q"+i).checked){
+cochés++;
+symptomes.push(q);
 }
-}
+});
 
-/* BOIRE ET MANGER */
-if(besoinActuel===1){
-let imc=document.getElementById("imc").value;
-if(imc<18.5){
-probleme="Déséquilibre nutritionnel inférieur";
-etiologie="Apports insuffisants";
-symptomes="IMC bas";
-dependance="Partiellement dépendant";
-plan=["Surveillance poids","Fractionner repas","Hydratation adaptée"];
-}
-}
+let dependance="Autonome";
+if(cochés>=3 && cochés<=5) dependance="Partiellement dépendant";
+if(cochés>5) dependance="Dépendant";
 
-/* ELIMINER */
-if(besoinActuel===2){
-if(document.getElementById("constipation").checked){
-probleme="Constipation";
-etiologie="Immobilité / alimentation pauvre en fibres";
-symptomes="Selles rares";
-dependance="Partiellement dépendant";
-plan=["Hydratation","Mobilisation","Surveillance transit"];
-}
-}
+document.getElementById("p").innerText="Altération du besoin : "+besoins[besoin];
+document.getElementById("e").innerText="Facteurs liés à l'état pathologique ou situation clinique";
+document.getElementById("s").innerText=symptomes.join(", ");
+document.getElementById("d").innerText=dependance;
 
-/* SE MOUVOIR */
-if(besoinActuel===3){
-if(document.getElementById("alite").checked){
-probleme="Mobilité physique altérée";
-etiologie="Faiblesse musculaire";
-symptomes="Alitement";
-dependance="Dépendant";
-plan=["Mobilisation progressive","Prévention escarre","Changement position 2h"];
-}
-}
-
-/* AUTRES BESOINS SIMPLIFIÉS */
-if(besoinActuel>3){
-probleme="Besoin perturbé : "+besoins[besoinActuel];
-etiologie="Facteurs liés à l’état clinique";
-symptomes="Selon évaluation";
-dependance="À déterminer";
-plan=["Surveillance adaptée","Accompagnement","Éducation du patient"];
-}
-
-document.getElementById("probleme").innerText=probleme;
-document.getElementById("etiologie").innerText=etiologie;
-document.getElementById("symptomes").innerText=symptomes;
-document.getElementById("dependance").innerText=dependance;
-
-let ul=document.getElementById("planSoins");
-ul.innerHTML="";
-plan.forEach(p=>{
+let plan=document.getElementById("plan");
+plan.innerHTML="";
+[
+"Surveillance ciblée",
+"Accompagnement personnalisé",
+"Éducation thérapeutique",
+"Prévention complications",
+"Réévaluation quotidienne"
+].forEach(p=>{
 let li=document.createElement("li");
 li.innerText=p;
-ul.appendChild(li);
+plan.appendChild(li);
 });
 }
-
-/* ===== NAVIGATION ===== */
 
 function suivant(){
 index++;

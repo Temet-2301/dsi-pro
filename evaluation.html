@@ -125,15 +125,8 @@ location.reload();
 
 function resumeFinal(){
 
-let evaluations = JSON.parse(localStorage.getItem("evaluations")) || [];
-
 let zone=document.getElementById("resumeZone");
 zone.innerHTML="<h2>Résumé Global du Patient</h2>";
-
-if(evaluations.length===0){
-zone.innerHTML+="<p>Aucune évaluation enregistrée.</p>";
-return;
-}
 
 evaluations.forEach(e=>{
 zone.innerHTML+=`
@@ -145,5 +138,9 @@ zone.innerHTML+=`
 `;
 });
 
-zone.innerHTML+=`<br><button onclick="window.print()">Exporter en PDF</button>`;
+zone.innerHTML+=`<button onclick="window.print()">Exporter en PDF</button>`;
 }
+
+</script>
+</body>
+</html>

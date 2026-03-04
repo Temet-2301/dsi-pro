@@ -140,7 +140,27 @@ zone.innerHTML+=`
 
 zone.innerHTML+=`<button onclick="window.print()">Exporter en PDF</button>`;
 }
+let patients = JSON.parse(localStorage.getItem("patients")) || [];
+let patientId = localStorage.getItem("patientActif");
 
+let patient = patients.find(p => p.id === patientId);
+
+if(patient){
+
+patient.evaluations = patient.evaluations.filter(e => e.besoin !== besoins[besoin]);
+
+let diagnostic={
+besoin:besoins[besoin],
+probleme:"Altération du besoin",
+etiologie:"Lié à l’état clinique",
+symptomes:symptomes.join(", "),
+dependance:dependance
+};
+
+patient.evaluations.push(diagnostic);
+
+localStorage.setItem("patients",JSON.stringify(patients));
+}
 </script>
 </body>
 </html>

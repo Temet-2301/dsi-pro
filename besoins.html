@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DSI Pro - Besoins</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="font-family: Arial; padding:20px;">
+
+<h2 id="titre"></h2>
+
+<div id="listeBesoins"></div>
+
+<br>
+<button onclick="commencer()" id="btnCommencer"></button>
+
+<script>
+
+const textes = {
+  fr: {
+    titre: "Sélection des besoins perturbés",
+    bouton: "Commencer l’évaluation",
+    besoins: [
+      "Respirer",
+      "Boire et manger",
+      "Éliminer",
+      "Se mouvoir",
+      "Dormir et se reposer",
+      "Se vêtir et se dévêtir",
+      "Maintenir la température",
+      "Être propre et protéger ses téguments",
+      "Éviter les dangers",
+      "Communiquer",
+      "Agir selon ses croyances",
+      "S’occuper en vue de se réaliser",
+      "Se divertir",
+      "Apprendre"
+    ]
+  },
+  en: {
+    titre: "Select altered needs",
+    bouton: "Start evaluation",
+    besoins: [
+      "Breathe",
+      "Eat and drink",
+      "Eliminate",
+      "Move",
+      "Sleep and rest",
+      "Dress and undress",
+      "Maintain temperature",
+      "Hygiene and skin care",
+      "Avoid dangers",
+      "Communicate",
+      "Beliefs and values",
+      "Work and accomplishment",
+      "Recreation",
+      "Learn"
+    ]
+  },
+  es: {
+    titre: "Seleccionar necesidades alteradas",
+    bouton: "Iniciar evaluación",
+    besoins: [
+      "Respirar",
+      "Comer y beber",
+      "Eliminar",
+      "Moverse",
+      "Dormir y descansar",
+      "Vestirse",
+      "Mantener la temperatura",
+      "Higiene y piel",
+      "Evitar peligros",
+      "Comunicar",
+      "Creencias y valores",
+      "Ocuparse",
+      "Recreación",
+      "Aprender"
+    ]
+  }
+};
+
+const langue = localStorage.getItem("langue") || "fr";
+const t = textes[langue];
+
+document.getElementById("titre").innerText = t.titre;
+document.getElementById("btnCommencer").innerText = t.bouton;
+
+const div = document.getElementById("listeBesoins");
+
+t.besoins.forEach((besoin, index) => {
+  div.innerHTML += `
+    <label>
+      <input type="checkbox" value="${index}">
+      ${besoin}
+    </label><br><br>
+  `;
+});
+
+function commencer(){
+  const coches = document.querySelectorAll("input[type=checkbox]:checked");
+  let selection = [];
+
+  coches.forEach(c => {
+    selection.push(parseInt(c.value));
+  });
+
+  if(selection.length > 0){
+    localStorage.setItem("besoinsSelectionnes", JSON.stringify(selection));
+    localStorage.setItem("indexBesoin", 0);
+    window.location.href = "evaluation.html";
+  }
+}
+
+</script>
+
+</body>
+  </html>
